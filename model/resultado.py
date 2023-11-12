@@ -4,6 +4,7 @@ class Resultado:
         self.numeroRuc = None
         self.razonSocial = None
         self.tipoContribuyente = None
+        self.nombreComercial = None
         self.fechaInscripcion = None
         self.fechaInicioActividades = None
         self.estadoContribuyente = None   

@@ -1,10 +1,14 @@
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 import time
 import random
+from conectar_bd import conectar_bd, insertar_resultado
+from datetime import datetime
 
-
+# Variable que devolvera el metodo iniciarProceso()
+resultado = {}
 
 def iniciarProceso():
 
@@ -68,16 +72,17 @@ def iniciarProceso():
                 elemento_row = fila.find_element(By.CLASS_NAME, "row")
                 try:
                     nombre_valor = elemento_row.find_element(By.CLASS_NAME, "col-sm-5")
-                    nombre_valor_text = nombre_valor.text
+                    nombre_valor_text = nombre_valor.text.replace(':', '')
 
                     valor = elemento_row.find_element(By.CLASS_NAME, "col-sm-7")
                     valor_text = valor.text
                     
+                    resultado[nombre_valor_text] = valor_text
+                    mapeo_resultado(resultado,'20487988023')
+                    insertar_resultado(resultado)
                 except NoSuchElementException:
-                    print("No se encontró el elemento row en esta fila.")            
-                    #driver.quit()  
-                # texto_row = elemento_row.text
-                # print(texto_row)
+                    print("No se encontró el elemento col-sm-5 / col-sm-7 en esta fila.")            
+                    #driver.quit()
             except NoSuchElementException:
                 print("No se encontró el elemento row en esta fila.")
                 #driver.quit()                     
@@ -87,6 +92,33 @@ def iniciarProceso():
 
     #driver.quit()  
     time.sleep(random.randint(1, 10))
-
     driver.quit()  
+
+    print(resultado)
+
+    return resultado
+
+
+# def mapeoVariables(nombreValor, valor):
+#     if nombreValor == 'Número de RUC:':
+#         resultado[nombreValor] = valor
+#     if nombreValor == 'Tipo Contribuyente:':
+#         resultado[nombreValor] = valor        
+
+def insertar_resultado(resultado):
+    # Establecer conexión y obtener el cursor
+    conexion, cursor = conectar_bd()
+
+    # Llamamos a la función para insertar los datos
+    insertar_resultado(cursor, resultado)
+
+    # Confirmar la transacción y cerrar el cursor y la conexión
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+
+def mapeo_resultado(resultado, ruc):
+    resultado['fechaBusqueda'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    resultado['numeroRuc'] = ruc
+    
 iniciarProceso()
