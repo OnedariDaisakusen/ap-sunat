@@ -76,16 +76,18 @@ def iniciarProceso():
 
                     valor = elemento_row.find_element(By.CLASS_NAME, "col-sm-7")
                     valor_text = valor.text
-                    
-                    resultado[nombre_valor_text] = valor_text
-                    mapeo_resultado(resultado,'20487988023')
-                    insertar_resultado(resultado)
+
+                    resultado[mapeo_resultado(nombre_valor_text)] = valor_text
+
                 except NoSuchElementException:
                     print("No se encontró el elemento col-sm-5 / col-sm-7 en esta fila.")            
                     #driver.quit()
             except NoSuchElementException:
                 print("No se encontró el elemento row en esta fila.")
-                #driver.quit()                     
+                #driver.quit()
+        agregar_valores_defecto('20487988023')
+        print(resultado)
+        insertar_resultado(resultado)                            
     except NoSuchElementException: 
         print("Hubo un error al obtener el elemento") 
         #driver.quit()
@@ -94,9 +96,7 @@ def iniciarProceso():
     time.sleep(random.randint(1, 10))
     driver.quit()  
 
-    print(resultado)
-
-    return resultado
+ 
 
 
 # def mapeoVariables(nombreValor, valor):
@@ -105,20 +105,64 @@ def iniciarProceso():
 #     if nombreValor == 'Tipo Contribuyente:':
 #         resultado[nombreValor] = valor        
 
-def insertar_resultado(resultado):
-    # Establecer conexión y obtener el cursor
-    conexion, cursor = conectar_bd()
+# def insertar_resultado(resultado):
+#     # Establecer conexión y obtener el cursor
+#     conexion, cursor = conectar_bd()
 
-    # Llamamos a la función para insertar los datos
-    insertar_resultado(cursor, resultado)
+#     # Llamamos a la función para insertar los datos
+#     insertar_resultado(cursor, resultado)
 
-    # Confirmar la transacción y cerrar el cursor y la conexión
-    conexion.commit()
-    cursor.close()
-    conexion.close()
+#     # Confirmar la transacción y cerrar el cursor y la conexión
+#     conexion.commit()
+#     cursor.close()
+#     conexion.close()
 
-def mapeo_resultado(resultado, ruc):
+def agregar_valores_defecto(ruc):
     resultado['fechaBusqueda'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     resultado['numeroRuc'] = ruc
+    resultado['fechaInscripcion'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    resultado['fechaInicioActividades'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    resultado['sistemaEmisionComprobante'] = ''
+    resultado['actividadComercioInterior'] = ''
+    resultado['importante'] = ''
     
+
+    
+
+def mapeo_resultado(nombreValor):
+    if nombreValor == 'Número de RUC':
+        nombreValor = 'razonSocial'
+    elif nombreValor == 'Tipo Contribuyente':
+        nombreValor = 'tipoContribuyente'
+    elif nombreValor == 'Nombre Comercial':
+        nombreValor = 'nombreComercial'
+    elif nombreValor == 'Fecha de Inscripción':
+        nombreValor = 'fechaInscripcion'
+    elif nombreValor == 'Fecha de Inicio de Actividades':
+        nombreValor = 'fechaInicioActividades'   
+    elif nombreValor == 'Estado del Contribuyente':
+        nombreValor = 'estadoContribuyente'   
+    elif nombreValor == 'Condición del Contribuyente':
+        nombreValor = 'condicionContribuyente'   
+    elif nombreValor == 'Domicilio Fiscal':
+        nombreValor = 'domicilioFiscal'    
+    elif nombreValor == 'Sistema Emisión de Comprobante':
+        nombreValor = 'domicilioFiscal'           
+    elif nombreValor == 'Actividad Comercio Exterior':
+        nombreValor = 'actividadComercioInterior'       
+    elif nombreValor == 'Sistema Contabilidad':
+        nombreValor = 'sistemaContabilidad'
+    elif nombreValor == 'Actividad(es) Económica(s)':
+        nombreValor = 'actividadesEconomicas'    
+    elif nombreValor == 'Emisor electrónico desde':
+        nombreValor = 'emisorElectronicoDesde'
+    elif nombreValor == 'Comprobantes Electrónicos':
+        nombreValor = 'comprobantesElectronicos' 
+    elif nombreValor == 'Afiliado al PLE desde':
+        nombreValor = 'afiliadoAlPLEDesde'     
+    elif nombreValor == 'Padrones':
+        nombreValor = 'padrones'   
+    elif nombreValor == 'Importante':
+        nombreValor = 'importante'                                                                            
+    return nombreValor    
 iniciarProceso()
