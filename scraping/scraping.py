@@ -9,20 +9,15 @@ from datetime import datetime
 
 # Variable que devolvera el metodo iniciarProceso()
 resultado = {}
+variable_ruc = "20559555496"
 
 def iniciarProceso():
+
+
     PROXY = "123.30.154.171:7777"
     CHROME_DRIVER_PATH = 'C:\\Users\\fjvil\Downloads\\chromedriver_win32\\chromedriver.exe'
 
     proxy_address = "http://50.171.32.231:80"
-    proxy = Proxy({
-        'proxyType': ProxyType.MANUAL,
-        'httpProxy': proxy_address,
-        'ftpProxy': proxy_address,
-        'sslProxy': proxy_address,
-        'noProxy': ''  # Opciones adicionales, puedes dejarlo vacío si no es necesario
-    })
-
 
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 
@@ -39,7 +34,7 @@ def iniciarProceso():
     options.add_argument('--allow-running-insecure-content')
     options.add_argument("--disable-extensions")
     options.add_argument("--proxy-server='direct://'")
-    # options.add_argument('--proxy-server=%s' % proxy_address)  
+    options.add_argument('--proxy-server=%s' % proxy_address)  
     options.add_argument("--proxy-bypass-list=*")
     options.add_argument("--start-maximized")
     options.add_argument('--disable-gpu')
@@ -70,7 +65,7 @@ def iniciarProceso():
     # Buscamos el imput para el ruc
     imput_ruc = driver.find_element(By.ID, 'txtRuc')
     # Le digito un valor
-    imput_ruc.send_keys('20487988023')
+    imput_ruc.send_keys(variable_ruc)
     # imput_ruc.send_keys('20469378561')
 
     # Buscamos el boton para el submit
@@ -101,15 +96,16 @@ def iniciarProceso():
                     cod_resultado_mapeo_valores_sm3 = mapeo_valores_sm3(elemento_row)
 
                 if cod_resultado_mapeo_valores_sm3 == 1:
-                    cod_resultado_mapeo_valores_sm12 = mapeo_valores_sm3(elemento_row)                
+                    print('Entro al sm-12')
+                    cod_resultado_mapeo_valores_sm12 = mapeo_valores_sm12(elemento_row)                
                
             except NoSuchElementException:
                 print("No se encontró el elemento row en esta fila.")
             cod_result_bloque1 = 0
             cod_result_bloque2 = 0
-        agregar_valores_defecto('20487988023')
+        agregar_valores_defecto()
         print(resultado)
-        #insertar_resultado(resultado)                            
+        insertar_resultado(resultado)                            
     except NoSuchElementException: 
         print("Hubo un error al obtener el elemento list-group") 
         #driver.quit()
@@ -164,9 +160,15 @@ def mapeo_valores_sm12(row):
         print("No se encontró el elemento col-sm-12 en esta fila.")
         return 1 # Si hubo un error   
     
-def agregar_valores_defecto(ruc):
+def agregar_valores_defecto():
     resultado['fechaBusqueda'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    resultado['numeroRuc'] = ruc
+    resultado['numeroRuc'] = variable_ruc
+
+    if 'importante' in resultado:
+        print("El valor IMPORTANTE EXISTE")
+    else:
+        print("El valor IMPORTANTE NO EXISTE")
+        resultado["importante"] = ''
     
 def mapeo_resultado(nombreValor):
     if nombreValor == 'Número de RUC':
@@ -186,7 +188,7 @@ def mapeo_resultado(nombreValor):
     elif nombreValor == 'Domicilio Fiscal':
         nombreValor = 'domicilioFiscal'    
     elif nombreValor == 'Sistema Emisión de Comprobante':
-        nombreValor = 'domicilioFiscal'           
+        nombreValor = 'sistemaEmisionComprobante'           
     elif nombreValor == 'Actividad Comercio Exterior':
         nombreValor = 'actividadComercioInterior'       
     elif nombreValor == 'Sistema Contabilidad':
