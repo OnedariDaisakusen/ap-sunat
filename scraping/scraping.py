@@ -9,15 +9,9 @@ from datetime import datetime
 
 # Variable que devolvera el metodo iniciarProceso()
 resultado = {}
-variable_ruc = "20559555496"
+variable_ruc = "20508432462"
 
 def iniciarProceso():
-
-
-    PROXY = "123.30.154.171:7777"
-    CHROME_DRIVER_PATH = 'C:\\Users\\fjvil\Downloads\\chromedriver_win32\\chromedriver.exe'
-
-    proxy_address = "http://50.171.32.231:80"
 
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 
@@ -29,12 +23,12 @@ def iniciarProceso():
 
     # options.add_argument('--headless')
     options.add_argument(f'user-agent={user_agent}')
-    options.add_argument("--window-size=1920,1080")
+    # options.add_argument("--window-size=1920,1080")
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--allow-running-insecure-content')
     options.add_argument("--disable-extensions")
     options.add_argument("--proxy-server='direct://'")
-    options.add_argument('--proxy-server=%s' % proxy_address)  
+    # options.add_argument('--proxy-server=%s' % proxy_address)  
     options.add_argument("--proxy-bypass-list=*")
     options.add_argument("--start-maximized")
     options.add_argument('--disable-gpu')
