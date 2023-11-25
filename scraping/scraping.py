@@ -4,12 +4,12 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 import time
 from selenium.webdriver.common.proxy import Proxy, ProxyType
-from conectar_bd import conectar_bd, insertar_resultado
+from conectar_bd import insertar_resultado
 from datetime import datetime
 
 # Variable que devolvera el metodo iniciarProceso()
 resultado = {}
-variable_ruc = "20508432462"
+variable_ruc = "20519223105"
 
 def iniciarProceso():
 
@@ -21,7 +21,7 @@ def iniciarProceso():
     # # Usamos chrome como navegador
     options = webdriver.ChromeOptions()
 
-    # options.add_argument('--headless')
+    options.add_argument('--headless')
     options.add_argument(f'user-agent={user_agent}')
     # options.add_argument("--window-size=1920,1080")
     options.add_argument('--ignore-certificate-errors')
@@ -90,7 +90,6 @@ def iniciarProceso():
                     cod_resultado_mapeo_valores_sm3 = mapeo_valores_sm3(elemento_row)
 
                 if cod_resultado_mapeo_valores_sm3 == 1:
-                    print('Entro al sm-12')
                     cod_resultado_mapeo_valores_sm12 = mapeo_valores_sm12(elemento_row)                
                
             except NoSuchElementException:
@@ -200,7 +199,5 @@ def mapeo_resultado(nombreValor):
     elif nombreValor == 'Importante':
         nombreValor = 'importante'                                                                            
     return nombreValor    
-
-
 
 iniciarProceso()
