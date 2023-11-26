@@ -94,7 +94,7 @@ def iniciarProceso(lista_rucs):
                     print("No se encontró el elemento row en esta fila.")
                 cod_result_bloque1 = 0
                 cod_result_bloque2 = 0
-            agregar_valores_defecto()
+            agregar_valores_defecto(ruc)
             print(resultado)
             insertar_resultado(resultado)         
 
@@ -159,7 +159,7 @@ def mapeo_valores_sm12(row):
         print("No se encontró el elemento col-sm-12 en esta fila.")
         return 1 # Si hubo un error   
     
-def agregar_valores_defecto():
+def agregar_valores_defecto(variable_ruc):
     resultado['fechaBusqueda'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     resultado['numeroRuc'] = variable_ruc
 
