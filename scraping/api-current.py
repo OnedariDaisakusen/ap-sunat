@@ -77,8 +77,10 @@ def upload_file():
         # Guarda la columna "documento" en una variable
         documentos = df['documento'].tolist()
 
+        controlador_hilos.ejecutar_hilo(documentos)
+
         # Devuelve la lista de documentos
-        return jsonify({'documentos': documentos}), 200
+        return jsonify({'mensaje': "El archivo se encuentra en proceso"}), 200
 
     except Exception as e:
         # Devuelve un mensaje de error si hay algún problema al leer el archivo

@@ -3,15 +3,17 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 import time
-from selenium.webdriver.common.proxy import Proxy, ProxyType
 from conectar_bd import insertar_resultado
 from datetime import datetime
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 # Variable que devolvera el metodo iniciarProceso()
 resultado = {}
-variable_ruc = "20519223105"
+# variable_ruc = "20519223105"
+# lista_rucs = ["20600869095","20601033021","20600864735"]
 
-def iniciarProceso():
+def iniciarProceso(lista_rucs):
 
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 
@@ -21,7 +23,7 @@ def iniciarProceso():
     # # Usamos chrome como navegador
     options = webdriver.ChromeOptions()
 
-    options.add_argument('--headless')
+    # options.add_argument('--headless')
     options.add_argument(f'user-agent={user_agent}')
     # options.add_argument("--window-size=1920,1080")
     options.add_argument('--ignore-certificate-errors')
@@ -35,8 +37,6 @@ def iniciarProceso():
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--no-sandbox')
 
-
-
     # Se agregan opciones si son necesarias
     # driver = webdriver.Firefox(options=options)
 
@@ -46,64 +46,70 @@ def iniciarProceso():
 
     # driver = webdriver.Chrome(executable_path=r"C:\chromedriver_win32\chromedriver.exe")
 
-
-    
-
     # Indicamos la pagina a hacer el scraping
     # driver.get('https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias')
     driver.get('https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/FrameCriterioBusquedaWeb.jsp')
 
-
     driver.delete_all_cookies()
 
-    # Buscamos el imput para el ruc
-    imput_ruc = driver.find_element(By.ID, 'txtRuc')
-    # Le digito un valor
-    imput_ruc.send_keys(variable_ruc)
-    # imput_ruc.send_keys('20469378561')
+    print("Se abrio la pagina:")
 
-    # Buscamos el boton para el submit
-    boton_buscar = driver.find_element(By.ID, 'btnAceptar')
-    # Hacemos click
-    boton_buscar.click()
+    for ruc in lista_rucs:
+        # Buscamos el imput para el ruc
+        imput_ruc = driver.find_element(By.ID, 'txtRuc')
+        # Le digito un valor
+        imput_ruc.send_keys(ruc)
+        # imput_ruc.send_keys('20469378561')
+        # Buscamos el boton para el submit
+        boton_buscar = driver.find_element(By.ID, 'btnAceptar')
+        # Hacemos click
+        boton_buscar.click()
 
-    time.sleep(2)
+        time.sleep(5)
 
-    try:
-        # Aqui se tiene el contenedor de todos los valores requeridos
-        tabla_resultado = driver.find_element(By.CLASS_NAME, 'list-group') 
-        # Aqui se obtiene la lista de items que tiene el contendor
-        filas_resultado = tabla_resultado.find_elements(By.CLASS_NAME, 'list-group-item')
-        cod_resultado_mapeo_valores_sm5_sm7 = 0
-        cod_resultado_mapeo_valores_sm3 = 0
-        cod_resultado_mapeo_valores_sm12 = 0
+        try:
+            # Aqui se tiene el contenedor de todos los valores requeridos
+            tabla_resultado = driver.find_element(By.CLASS_NAME, 'list-group') 
+            # Aqui se obtiene la lista de items que tiene el contendor
+            filas_resultado = tabla_resultado.find_elements(By.CLASS_NAME, 'list-group-item')
+            cod_resultado_mapeo_valores_sm5_sm7 = 0
+            cod_resultado_mapeo_valores_sm3 = 0
+            cod_resultado_mapeo_valores_sm12 = 0
 
-        for fila in filas_resultado:
-            try:
-                # Cada list-group-item puede tener uno o mas rows#driver.quit()
-                elemento_row = fila.find_element(By.CLASS_NAME, "row")
+            for fila in filas_resultado:
+                try:
+                    # Cada list-group-item puede tener uno o mas rows#driver.quit()
+                    elemento_row = fila.find_element(By.CLASS_NAME, "row")
 
-                # Este bloque try obtiene de la etiqueta row las etiquetas col-sm-5 / col-sm-7
-                cod_resultado_mapeo_valores_sm5_sm7 = mapeo_valores_sm5_sm7(elemento_row)
+                    # Este bloque try obtiene de la etiqueta row las etiquetas col-sm-5 / col-sm-7
+                    cod_resultado_mapeo_valores_sm5_sm7 = mapeo_valores_sm5_sm7(elemento_row)
 
-                if cod_resultado_mapeo_valores_sm5_sm7 == 1:
-                    cod_resultado_mapeo_valores_sm3 = mapeo_valores_sm3(elemento_row)
+                    if cod_resultado_mapeo_valores_sm5_sm7 == 1:
+                        cod_resultado_mapeo_valores_sm3 = mapeo_valores_sm3(elemento_row)
 
-                if cod_resultado_mapeo_valores_sm3 == 1:
-                    cod_resultado_mapeo_valores_sm12 = mapeo_valores_sm12(elemento_row)                
-               
-            except NoSuchElementException:
-                print("No se encontró el elemento row en esta fila.")
-            cod_result_bloque1 = 0
-            cod_result_bloque2 = 0
-        agregar_valores_defecto()
-        print(resultado)
-        insertar_resultado(resultado)                            
-    except NoSuchElementException: 
-        print("Hubo un error al obtener el elemento list-group") 
-        #driver.quit()
+                    if cod_resultado_mapeo_valores_sm3 == 1:
+                        cod_resultado_mapeo_valores_sm12 = mapeo_valores_sm12(elemento_row)                
+                
+                except NoSuchElementException:
+                    print("No se encontró el elemento row en esta fila.")
+                cod_result_bloque1 = 0
+                cod_result_bloque2 = 0
+            agregar_valores_defecto()
+            print(resultado)
+            insertar_resultado(resultado)         
 
-    #driver.quit()  
+            boton_volver = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "btnNuevaConsulta"))
+            )
+
+            # Hacer clic en el botón
+            boton_volver.click()
+            time.sleep(2)                   
+        except NoSuchElementException: 
+            print("Hubo un error al obtener el elemento list-group")
+            driver.get('https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/FrameCriterioBusquedaWeb.jsp')
+            driver.delete_all_cookies()
+
     # time.sleep(random.randint(1, 10))
     driver.quit()  
 
