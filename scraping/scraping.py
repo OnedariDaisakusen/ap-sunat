@@ -206,4 +206,4 @@ def mapeo_resultado(nombreValor):
         nombreValor = 'importante'                                                                            
     return nombreValor    
 
-iniciarProceso()
+# iniciarProceso()

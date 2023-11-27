@@ -74,6 +74,90 @@ def insertar_resultado(resultado_dict):
         if conexion is not None:
             conexion.close()     
 
+def insertar_proceso(proceso_dict):
+
+    sql = """
+            INSERT INTO tb_sunat_proceso (
+            fecha_finalizacion,estado,registros_procesados,registros_no_procesados,id_usuario
+            ) VALUES (
+                %s, %s, %s, %s, %s
+            );
+        """
+    conexion = None
+    try:
+
+        conexion = psycopg2.connect(
+            dbname='postgres',
+            user='postgres',
+            password='123456',
+            host='localhost',
+            port='5432'
+        )
+
+        cursor = conexion.cursor()
+
+        # Extraer los valores del diccionario
+        valores = (
+            proceso_dict['fechaBusqueda'], proceso_dict['estado'],
+            proceso_dict['registros_procesados'], proceso_dict['registros_no_procesados'],
+            proceso_dict['id_usuario']
+        )
+
+        # Ejecutar la consulta de inserción
+        cursor.execute(sql, valores)
+        conexion.commit()
+        cursor.close()
+        print("Datos insertados correctamente.")
+
+    except psycopg2.Error as e:
+        print(f"Error durante la inserción de datos: {e}")   
+    finally:
+        if conexion is not None:
+            conexion.close()  
+
+def actualizar_proceso(proceso_dict):
+
+    sql = """
+            UPDATE tb_sunat_proceso 
+            SET 
+                estado = %s,
+                fecha_finalizacion  = %s,
+                registros_procesados  = %s,
+                registros_no_procesados = %s
+            where id = %s
+            ;
+        """
+    conexion = None
+    try:
+
+        conexion = psycopg2.connect(
+            dbname='postgres',
+            user='postgres',
+            password='123456',
+            host='localhost',
+            port='5432'
+        )
+
+        cursor = conexion.cursor()
+
+        # Extraer los valores del diccionario
+        valores = (
+            proceso_dict['fechaBusqueda'], proceso_dict['estado'],
+            proceso_dict['registros_procesados'], proceso_dict['registros_no_procesados']
+        )
+
+        # Ejecutar la consulta de inserción
+        cursor.execute(sql, valores)
+        conexion.commit()
+        cursor.close()
+        print("Datos insertados correctamente.")
+
+    except psycopg2.Error as e:
+        print(f"Error durante la inserción de datos: {e}")   
+    finally:
+        if conexion is not None:
+            conexion.close()  
+        
 
 if __name__ == "__main__":
     conectar_bd()

@@ -6,6 +6,8 @@ import time
 import pandas as pd
 import sys
 import signal
+from scraping import iniciarProceso
+from conectar_bd import insertar_proceso
 
 app = Flask(__name__)
 
@@ -35,11 +37,12 @@ class HilosControllerCurrent:
         # Nuevo: Devolver el valor actualizado del contador
         return self.hilos_en_ejecucion
 
-    def ejecutar_hilo(self):
+    def ejecutar_hilo(self, documentos):
         # Añadir la tarea a la cola
         def tarea():
-            time.sleep(20)  # Sleep de 20 segundos
-            print("Tarea ejecutada después de 20 segundos")
+            
+            iniciarProceso(documentos)
+            print("Proceso Iniciado")
 
         self.cola_tareas.put(tarea)
 
