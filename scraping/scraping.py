@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 import time
-from conectar_bd import insertar_resultado
+from conectar_bd import insertar_resultado, actualizar_proceso
 from datetime import datetime
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,7 +13,7 @@ resultado = {}
 # variable_ruc = "20519223105"
 # lista_rucs = ["20600869095","20601033021","20600864735"]
 
-def iniciarProceso(lista_rucs,idProceso):
+def iniciarProceso(lista_rucs,idProceso, idUsuario):
 
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 
@@ -111,8 +111,18 @@ def iniciarProceso(lista_rucs,idProceso):
             driver.delete_all_cookies()
 
     # time.sleep(random.randint(1, 10))
-    driver.quit()  
+    driver.quit()
 
+    proceso_dict = {
+        "id_proceso": idProceso,
+        'fecha_finalizacion':datetime.datetime.now(),
+        'estado':'TERMINADO',
+        'registros_procesados':0,
+        'registros_no_procesados':0,
+        'id_usuario':idUsuario
+    }
+
+    actualizar_proceso(proceso_dict)
 
 
 def mapeo_valores_sm5_sm7(row):

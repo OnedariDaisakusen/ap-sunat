@@ -39,11 +39,11 @@ class HilosControllerCurrent:
         # Nuevo: Devolver el valor actualizado del contador
         return self.hilos_en_ejecucion
 
-    def ejecutar_hilo(self, documentos,idProceso):
+    def ejecutar_hilo(self, documentos,idProceso, idUsuario):
         # Añadir la tarea a la cola
         def tarea():
             
-            iniciarProceso(documentos, idProceso)
+            iniciarProceso(documentos, idProceso, idUsuario)
             print("Proceso Iniciado")
 
         self.cola_tareas.put(tarea)
@@ -61,6 +61,18 @@ def ejecutar_hilo():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+
+    id_usuario = ""
+
+    try:
+        token = request.headers.get('Authorization').split('Bearer ')[1]
+        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        id_usuario = payload["user_id"]
+    except jwt.ExpiredSignatureError:
+        return jsonify({'mensaje': 'Token expirado'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'mensaje': 'Token inválido'}), 401    
+
     # Verifica si se envió un archivo en la solicitud
     if 'file' not in request.files:
         return jsonify({'error': 'No se proporcionó ningún archivo'}), 400
@@ -86,21 +98,17 @@ def upload_file():
         # Devuelve un mensaje de error si hay algún problema al leer el archivo
         return jsonify({'error': f'Error al leer el archivo Excel: {str(e)}'}), 500
 
-    #controlador_hilos.ejecutar_hilo(documentos)
     proceso_dict = {
         'fecha_finalizacion':None,
         'estado':'PROCESANDO',
         'registros_procesados':0,
         'registros_no_procesados':0,
-        'id_usuario':1
+        'id_usuario':id_usuario
     }
 
     id_proceso = insertar_proceso(proceso_dict)
-
-    print("Se abrro el nuevo proceso : ", id_proceso)
     controlador_hilos.ejecutar_hilo(documentos, id_proceso)
 
-    # Devuelve la lista de documentos
     return jsonify({'mensaje': "El archivo se encuentra en proceso"}), 200
 
 @app.route('/login', methods=['POST'])
@@ -124,16 +132,19 @@ def generate_token(user_id):
 
 @app.route('/pruebaToken', methods=['GET'])
 def prueba_token():
-    token = request.headers.get('Authorization').split('Bearer ')[1]
+    validarToken()
 
+
+
+def validarToken():
     try:
+        token = request.headers.get('Authorization').split('Bearer ')[1]
         payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
         return jsonify(logged_in_as=payload['user_id']), 200
     except jwt.ExpiredSignatureError:
         return jsonify({'mensaje': 'Token expirado'}), 401
     except jwt.InvalidTokenError:
-        return jsonify({'mensaje': 'Token inválido'}), 401
-
+        return jsonify({'mensaje': 'Token inválido'}), 401    
 
 if __name__ == '__main__':
     controlador_hilos = HilosControllerCurrent(numero_hilos=5)

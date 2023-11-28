@@ -146,8 +146,9 @@ def actualizar_proceso(proceso_dict):
 
         # Extraer los valores del diccionario
         valores = (
-            proceso_dict['fechaBusqueda'], proceso_dict['estado'],
-            proceso_dict['registros_procesados'], proceso_dict['registros_no_procesados']
+            proceso_dict['fecha_finalizacion'], proceso_dict['estado'],
+            proceso_dict['registros_procesados'], proceso_dict['registros_no_procesados'],
+            proceso_dict['id_usuario']
         )
 
         # Ejecutar la consulta de inserción
