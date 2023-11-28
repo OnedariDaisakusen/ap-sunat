@@ -1,6 +1,14 @@
 import psycopg2
 from psycopg2 import sql
 
+conexion = psycopg2.connect(
+            dbname='postgres',
+            user='postgres',
+            password='123456',
+            host='localhost',
+            port='5432'
+        )
+
 def conectar_bd():
     try:
         # Parámetros de conexión, reemplázalos con tus propias credenciales
@@ -132,13 +140,7 @@ def actualizar_proceso(proceso_dict):
     conexion = None
     try:
 
-        conexion = psycopg2.connect(
-            dbname='postgres',
-            user='postgres',
-            password='123456',
-            host='localhost',
-            port='5432'
-        )
+
 
         cursor = conexion.cursor()
 
@@ -160,6 +162,18 @@ def actualizar_proceso(proceso_dict):
         if conexion is not None:
             conexion.close()  
         
+def obtenerUsuario(usuario):
+    select_query = sql.SQL("SELECT * FROM tb_sunat_usuario WHERE usuario = {}").format(sql.Literal(usuario['usuario']))
+
+    try:
+        cursor = conexion.cursor()
+        cursor.execute(select_query)
+        usuario = cursor.fetchone()
+
+        return usuario
+    except:
+        print("Error al obtenr usuario")
+
 
 if __name__ == "__main__":
     conectar_bd()

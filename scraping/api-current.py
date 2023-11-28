@@ -2,15 +2,16 @@ from flask import Flask, jsonify, request
 import concurrent.futures
 import queue
 import threading
-import time
 import pandas as pd
 import sys
 import signal
 from scraping import iniciarProceso
-from conectar_bd import insertar_proceso
-from datetime import datetime
+from conectar_bd import insertar_proceso, obtenerUsuario
+from datetime import datetime, timedelta
+import jwt
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'tu_clave_secreta'
 
 class HilosControllerCurrent:
     def __init__(self, numero_hilos):
@@ -93,6 +94,7 @@ def upload_file():
         'registros_no_procesados':0,
         'id_usuario':1
     }
+
     id_proceso = insertar_proceso(proceso_dict)
 
     print("Se abrro el nuevo proceso : ", id_proceso)
@@ -100,6 +102,38 @@ def upload_file():
 
     # Devuelve la lista de documentos
     return jsonify({'mensaje': "El archivo se encuentra en proceso"}), 200
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    usuario = obtenerUsuario(data)
+
+    # if usuario and check_password_hash(usuario[2], data['password']):
+    if usuario and usuario[6] == data['password']:
+        token = generate_token(usuario[0])
+        return jsonify({'mensaje': 'Inicio de sesión exitoso', 'id_usuario': usuario[0], 'token': token})
+    else:
+        return jsonify({'mensaje': 'Credenciales incorrectas'}), 401
+    
+def generate_token(user_id):
+    expiration_time = datetime.utcnow() + timedelta(days=1)  # Token expira en 1 día
+    payload = {'user_id': user_id, 'exp': expiration_time}
+    token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+    return token   
+
+@app.route('/pruebaToken', methods=['GET'])
+def prueba_token():
+    token = request.headers.get('Authorization').split('Bearer ')[1]
+
+    try:
+        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        return jsonify(logged_in_as=payload['user_id']), 200
+    except jwt.ExpiredSignatureError:
+        return jsonify({'mensaje': 'Token expirado'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'mensaje': 'Token inválido'}), 401
+
 
 if __name__ == '__main__':
     controlador_hilos = HilosControllerCurrent(numero_hilos=5)
