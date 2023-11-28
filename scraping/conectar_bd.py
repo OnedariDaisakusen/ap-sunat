@@ -21,7 +21,7 @@ def conectar_bd():
         print(f"Error de conexión a PostgreSQL: {e}")
 
 
-def insertar_resultado(resultado_dict):
+def insertar_resultado(resultado_dict, idProceso):
 
     sql = """
             INSERT INTO tb_sunat_resultado (
@@ -30,9 +30,9 @@ def insertar_resultado(resultado_dict):
                 estadoContribuyente, condicionContribuyente, domicilioFiscal,
                 sistemaEmisionComprobante, actividadComercioInterior, sistemaContabilidad,
                 actividadesEconomicas, emisorElectronicoDesde, comprobantesElectronicos,
-                afiliadoAlPLEDesde, padrones, importante
+                afiliadoAlPLEDesde, padrones, importante,id_proceso
             ) VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s
             );
         """
     conexion = None
@@ -59,7 +59,7 @@ def insertar_resultado(resultado_dict):
             resultado_dict['sistemaContabilidad'], resultado_dict['actividadesEconomicas'],
             resultado_dict['emisorElectronicoDesde'], resultado_dict['comprobantesElectronicos'],
             resultado_dict['afiliadoAlPLEDesde'], resultado_dict['padrones'],
-            resultado_dict['importante']
+            resultado_dict['importante'], idProceso
         )
 
         # Ejecutar la consulta de inserción
@@ -81,7 +81,7 @@ def insertar_proceso(proceso_dict):
             fecha_finalizacion,estado,registros_procesados,registros_no_procesados,id_usuario
             ) VALUES (
                 %s, %s, %s, %s, %s
-            );
+            )RETURNING id;
         """
     conexion = None
     try:
@@ -98,16 +98,18 @@ def insertar_proceso(proceso_dict):
 
         # Extraer los valores del diccionario
         valores = (
-            proceso_dict['fechaBusqueda'], proceso_dict['estado'],
+            proceso_dict['fecha_finalizacion'], proceso_dict['estado'],
             proceso_dict['registros_procesados'], proceso_dict['registros_no_procesados'],
             proceso_dict['id_usuario']
         )
 
         # Ejecutar la consulta de inserción
         cursor.execute(sql, valores)
+        nuevo_proceso_id = cursor.fetchone()[0]
         conexion.commit()
         cursor.close()
         print("Datos insertados correctamente.")
+        return nuevo_proceso_id
 
     except psycopg2.Error as e:
         print(f"Error durante la inserción de datos: {e}")   

@@ -13,7 +13,7 @@ resultado = {}
 # variable_ruc = "20519223105"
 # lista_rucs = ["20600869095","20601033021","20600864735"]
 
-def iniciarProceso(lista_rucs):
+def iniciarProceso(lista_rucs,idProceso):
 
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 
@@ -96,7 +96,7 @@ def iniciarProceso(lista_rucs):
                 cod_result_bloque2 = 0
             agregar_valores_defecto(ruc)
             print(resultado)
-            insertar_resultado(resultado)         
+            insertar_resultado(resultado, idProceso)         
 
             boton_volver = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.CLASS_NAME, "btnNuevaConsulta"))

@@ -8,6 +8,7 @@ import sys
 import signal
 from scraping import iniciarProceso
 from conectar_bd import insertar_proceso
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -37,11 +38,11 @@ class HilosControllerCurrent:
         # Nuevo: Devolver el valor actualizado del contador
         return self.hilos_en_ejecucion
 
-    def ejecutar_hilo(self, documentos):
+    def ejecutar_hilo(self, documentos,idProceso):
         # Añadir la tarea a la cola
         def tarea():
             
-            iniciarProceso(documentos)
+            iniciarProceso(documentos, idProceso)
             print("Proceso Iniciado")
 
         self.cola_tareas.put(tarea)
@@ -80,15 +81,25 @@ def upload_file():
         # Guarda la columna "documento" en una variable
         documentos = df['documento'].tolist()
 
-        controlador_hilos.ejecutar_hilo(documentos)
-
-        # Devuelve la lista de documentos
-        return jsonify({'mensaje': "El archivo se encuentra en proceso"}), 200
-
     except Exception as e:
         # Devuelve un mensaje de error si hay algún problema al leer el archivo
         return jsonify({'error': f'Error al leer el archivo Excel: {str(e)}'}), 500
 
+    #controlador_hilos.ejecutar_hilo(documentos)
+    proceso_dict = {
+        'fecha_finalizacion':None,
+        'estado':'PROCESANDO',
+        'registros_procesados':0,
+        'registros_no_procesados':0,
+        'id_usuario':1
+    }
+    id_proceso = insertar_proceso(proceso_dict)
+
+    print("Se abrro el nuevo proceso : ", id_proceso)
+    controlador_hilos.ejecutar_hilo(documentos, id_proceso)
+
+    # Devuelve la lista de documentos
+    return jsonify({'mensaje': "El archivo se encuentra en proceso"}), 200
 
 if __name__ == '__main__':
     controlador_hilos = HilosControllerCurrent(numero_hilos=5)
