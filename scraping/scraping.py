@@ -54,6 +54,9 @@ def iniciarProceso(lista_rucs,idProceso, idUsuario):
 
     print("Se abrio la pagina:")
 
+    numero_registros_procesados = 0
+    numero_registros_error = 0
+
     for ruc in lista_rucs:
         # Buscamos el imput para el ruc
         imput_ruc = driver.find_element(By.ID, 'txtRuc')
@@ -88,7 +91,9 @@ def iniciarProceso(lista_rucs,idProceso, idUsuario):
                         cod_resultado_mapeo_valores_sm3 = mapeo_valores_sm3(elemento_row)
 
                     if cod_resultado_mapeo_valores_sm3 == 1:
-                        cod_resultado_mapeo_valores_sm12 = mapeo_valores_sm12(elemento_row)                
+                        cod_resultado_mapeo_valores_sm12 = mapeo_valores_sm12(elemento_row)
+
+                    numero_registros_procesados = numero_registros_procesados + 1            
                 
                 except NoSuchElementException:
                     print("No se encontró el elemento row en esta fila.")
@@ -107,22 +112,24 @@ def iniciarProceso(lista_rucs,idProceso, idUsuario):
             time.sleep(2)                   
         except NoSuchElementException: 
             print("Hubo un error al obtener el elemento list-group")
+            numero_registros_error = numero_registros_error + 1            
             driver.get('https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/FrameCriterioBusquedaWeb.jsp')
             driver.delete_all_cookies()
 
     # time.sleep(random.randint(1, 10))
-    driver.quit()
-
+    
     proceso_dict = {
         "id_proceso": idProceso,
-        'fecha_finalizacion':datetime.datetime.now(),
+        'fecha_finalizacion':datetime.now(),
         'estado':'TERMINADO',
-        'registros_procesados':0,
-        'registros_no_procesados':0,
+        'registros_procesados':numero_registros_procesados,
+        'registros_no_procesados':numero_registros_error,
         'id_usuario':idUsuario
     }
 
     actualizar_proceso(proceso_dict)
+    driver.quit()
+
 
 
 def mapeo_valores_sm5_sm7(row):

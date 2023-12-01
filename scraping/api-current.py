@@ -107,7 +107,7 @@ def upload_file():
     }
 
     id_proceso = insertar_proceso(proceso_dict)
-    controlador_hilos.ejecutar_hilo(documentos, id_proceso)
+    controlador_hilos.ejecutar_hilo(documentos, id_proceso, id_usuario)
 
     return jsonify({'mensaje': "El archivo se encuentra en proceso"}), 200
 

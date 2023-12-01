@@ -1,13 +1,6 @@
 import psycopg2
 from psycopg2 import sql
-
-conexion = psycopg2.connect(
-            dbname='postgres',
-            user='postgres',
-            password='123456',
-            host='localhost',
-            port='5432'
-        )
+from datetime import datetime
 
 def conectar_bd():
     try:
@@ -139,23 +132,28 @@ def actualizar_proceso(proceso_dict):
         """
     conexion = None
     try:
-
-
+        conexion = psycopg2.connect(
+            dbname='postgres',
+            user='postgres',
+            password='123456',
+            host='localhost',
+            port='5432'
+        )
 
         cursor = conexion.cursor()
 
         # Extraer los valores del diccionario
         valores = (
-            proceso_dict['fecha_finalizacion'], proceso_dict['estado'],
+            "TERMINADO", datetime.now(),
             proceso_dict['registros_procesados'], proceso_dict['registros_no_procesados'],
-            proceso_dict['id_usuario']
+            proceso_dict['id_proceso']
         )
 
         # Ejecutar la consulta de inserción
         cursor.execute(sql, valores)
         conexion.commit()
         cursor.close()
-        print("Datos insertados correctamente.")
+        print("DATOS ACTUALIZADOS CORREXCTAMENTE")
 
     except psycopg2.Error as e:
         print(f"Error durante la inserción de datos: {e}")   
@@ -167,6 +165,15 @@ def obtenerUsuario(usuario):
     select_query = sql.SQL("SELECT * FROM tb_sunat_usuario WHERE usuario = {}").format(sql.Literal(usuario['usuario']))
 
     try:
+
+        conexion = psycopg2.connect(
+            dbname='postgres',
+            user='postgres',
+            password='123456',
+            host='localhost',
+            port='5432'
+        )
+
         cursor = conexion.cursor()
         cursor.execute(select_query)
         usuario = cursor.fetchone()
@@ -175,6 +182,8 @@ def obtenerUsuario(usuario):
     except:
         print("Error al obtenr usuario")
 
+def obtenerEstadoProceso(idProceso):
+    query = 
 
 if __name__ == "__main__":
     conectar_bd()
