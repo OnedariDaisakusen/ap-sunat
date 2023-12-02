@@ -183,7 +183,36 @@ def obtenerUsuario(usuario):
         print("Error al obtenr usuario")
 
 def obtenerEstadoProceso(idProceso):
-    query = 
+
+    query = sql.SQL("SELECT * FROM tb_sunat_proceso WHERE id = {}").format(sql.Literal(idProceso))
+
+    try:
+
+        conexion = psycopg2.connect(
+            dbname='postgres',
+            user='postgres',
+            password='123456',
+            host='localhost',
+            port='5432'
+        )
+
+        cursor = conexion.cursor()
+        cursor.execute(query)
+        proceso = cursor.fetchone()
+
+        obj_proceso = {
+            "id":proceso[0],
+            "fecha_creacion":proceso[1],
+            "fecha_finalizacion":proceso[2],
+            "estado":proceso[3],
+            "registros_procesados":proceso[4],
+            "registros_no_procesados":proceso[5],
+            "id_usuario":proceso[6],            
+        }
+
+        return obj_proceso
+    except:
+        print("Error al obtenr usuario")
 
 if __name__ == "__main__":
     conectar_bd()

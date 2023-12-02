@@ -93,7 +93,6 @@ def iniciarProceso(lista_rucs,idProceso, idUsuario):
                     if cod_resultado_mapeo_valores_sm3 == 1:
                         cod_resultado_mapeo_valores_sm12 = mapeo_valores_sm12(elemento_row)
 
-                    numero_registros_procesados = numero_registros_procesados + 1            
                 
                 except NoSuchElementException:
                     print("No se encontró el elemento row en esta fila.")
@@ -109,7 +108,9 @@ def iniciarProceso(lista_rucs,idProceso, idUsuario):
 
             # Hacer clic en el botón
             boton_volver.click()
-            time.sleep(2)                   
+            time.sleep(2)    
+
+            numero_registros_procesados = numero_registros_procesados + 1                           
         except NoSuchElementException: 
             print("Hubo un error al obtener el elemento list-group")
             numero_registros_error = numero_registros_error + 1            

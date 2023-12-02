@@ -6,7 +6,7 @@ import pandas as pd
 import sys
 import signal
 from scraping import iniciarProceso
-from conectar_bd import insertar_proceso, obtenerUsuario
+from conectar_bd import insertar_proceso, obtenerUsuario, obtenerEstadoProceso
 from datetime import datetime, timedelta
 import jwt
 
@@ -63,15 +63,24 @@ def ejecutar_hilo():
 def upload_file():
 
     id_usuario = ""
-
     try:
-        token = request.headers.get('Authorization').split('Bearer ')[1]
+        auth_header = request.headers.get('Authorization')
+
+        # Verificar si se proporciona la cabecera de autorización y tiene el formato correcto
+        if auth_header is None or 'Bearer ' not in auth_header:
+            raise jwt.InvalidTokenError('Token no proporcionado en la cabecera')
+
+        # Extraer el token
+        token = auth_header.split('Bearer ')[1]
+
+        # Decodificar el token
         payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
         id_usuario = payload["user_id"]
+
     except jwt.ExpiredSignatureError:
         return jsonify({'mensaje': 'Token expirado'}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({'mensaje': 'Token inválido'}), 401    
+    except jwt.InvalidTokenError as e:
+        return jsonify({'mensaje': str(e)}), 401  
 
     # Verifica si se envió un archivo en la solicitud
     if 'file' not in request.files:
@@ -109,7 +118,34 @@ def upload_file():
     id_proceso = insertar_proceso(proceso_dict)
     controlador_hilos.ejecutar_hilo(documentos, id_proceso, id_usuario)
 
+    return jsonify({'mensaje': "El archivo se encuentra en proceso. Puede consultar el estado con el codigo del proceso",'codigo-proceso':id_proceso}), 200
+
+@app.route('/uploadV2', methods=['POST'])
+def upload_filev2():
+
+    id_usuario = ""
+    try:
+        auth_header = request.headers.get('Authorization')
+
+        # Verificar si se proporciona la cabecera de autorización y tiene el formato correcto
+        if auth_header is None or 'Bearer ' not in auth_header:
+            raise jwt.InvalidTokenError('Token no proporcionado en la cabecera')
+
+        # Extraer el token
+        token = auth_header.split('Bearer ')[1]
+
+        # Decodificar el token
+        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        id_usuario = payload["user_id"]
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'mensaje': 'Token expirado'}), 401
+    except jwt.InvalidTokenError as e:
+        return jsonify({'mensaje': str(e)}), 401  
+
+
     return jsonify({'mensaje': "El archivo se encuentra en proceso"}), 200
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -124,6 +160,10 @@ def login():
     else:
         return jsonify({'mensaje': 'Credenciales incorrectas'}), 401
     
+@app.route('/obtenerEstadoProceso/<int:idProceso>', methods=['GET'])
+def obtenerProceso(idProceso):
+    return jsonify(obtenerEstadoProceso(idProceso))
+    
 def generate_token(user_id):
     expiration_time = datetime.utcnow() + timedelta(days=1)  # Token expira en 1 día
     payload = {'user_id': user_id, 'exp': expiration_time}
@@ -133,8 +173,6 @@ def generate_token(user_id):
 @app.route('/pruebaToken', methods=['GET'])
 def prueba_token():
     validarToken()
-
-
 
 def validarToken():
     try:
