@@ -6,7 +6,7 @@ import pandas as pd
 import sys
 import signal
 from scraping import iniciarProceso
-from conectar_bd import insertar_proceso, obtenerUsuario, obtenerEstadoProceso
+from conectar_bd import insertar_proceso, obtenerUsuario, obtenerEstadoProceso, listaResultadosPorProceso
 from datetime import datetime, timedelta
 import jwt
 
@@ -49,7 +49,6 @@ class HilosControllerCurrent:
         self.cola_tareas.put(tarea)
 
         return "Petición recibida. La tarea se ha agregado a la cola."
-
 
 @app.route('/api2/hilos-en-ejecucion')
 def hilos_en_ejecucion():
@@ -183,6 +182,13 @@ def validarToken():
         return jsonify({'mensaje': 'Token expirado'}), 401
     except jwt.InvalidTokenError:
         return jsonify({'mensaje': 'Token inválido'}), 401    
+
+@app.route('/obtenerResultadoProceso/<int:idProceso>', methods=['GET'])
+def obtenerResultadoProceso(idProceso):
+    return jsonify(listaResultadosPorProceso(idProceso))
+
+
+
 
 if __name__ == '__main__':
     controlador_hilos = HilosControllerCurrent(numero_hilos=5)

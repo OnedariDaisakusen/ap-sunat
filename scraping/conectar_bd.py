@@ -21,7 +21,6 @@ def conectar_bd():
     except psycopg2.Error as e:
         print(f"Error de conexión a PostgreSQL: {e}")
 
-
 def insertar_resultado(resultado_dict, idProceso):
 
     sql = """
@@ -214,5 +213,52 @@ def obtenerEstadoProceso(idProceso):
     except:
         print("Error al obtenr usuario")
 
+def listaResultadosPorProceso(idProceso):
+    try:
+        conexion = psycopg2.connect(
+            dbname='postgres',
+            user='postgres',
+            password='123456',
+            host='54.242.252.29',
+            port='5432'
+        )
+        cursor = conexion.cursor()
+
+        query = f"SELECT * FROM tb_sunat_resultado WHERE id_proceso = '{idProceso}'"
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+
+        response = [
+            {
+                'fechabusqueda': resultado[1],
+                'numeroruc': resultado[2],
+                'razonsocial': resultado[3],
+                'tipocontribuyente': resultado[4],
+                'nombrecomercial': resultado[5],
+                'fechainscripcion': resultado[6],
+                'fechainicioactividades': resultado[7],
+                'estadocontribuyente': resultado[8],
+                'condicioncontribuyente': resultado[9],
+                'domiciliofiscal': resultado[10],
+                'sistemaemisioncomprobante': resultado[11],
+                'actividadcomerciointerior': resultado[12],
+                'sistemacontabilidad': resultado[13],
+                'actividadeseconomicas': resultado[14],
+                'emisorelectronicodesde': resultado[15],
+                'comprobanteselectronicos': resultado[16],
+                'afiliadoalpledesde': resultado[17],
+                'padrones': resultado[18],
+                'importante': resultado[19]                
+            } for resultado in resultados]
+        return response
+
+    except (Exception, psycopg2.Error) as error:
+        print("Error al obtener productos:", error)       
+        return {'error': 'Ocurrió un error al obtener productos'}
+    finally:
+        if conexion:
+            cursor.close()
+            conexion.close()
+                
 if __name__ == "__main__":
     conectar_bd()
