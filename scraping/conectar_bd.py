@@ -9,7 +9,7 @@ def conectar_bd():
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='localhost',
+            host='54.242.252.29',
             port='5432'
         )
 
@@ -43,7 +43,7 @@ def insertar_resultado(resultado_dict, idProceso):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='localhost',
+            host='54.242.252.29',
             port='5432'
         )
 
@@ -91,7 +91,7 @@ def insertar_proceso(proceso_dict):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='localhost',
+            host='54.242.252.29',
             port='5432'
         )
 
@@ -136,7 +136,7 @@ def actualizar_proceso(proceso_dict):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='localhost',
+            host='54.242.252.29',
             port='5432'
         )
 
@@ -170,7 +170,7 @@ def obtenerUsuario(usuario):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='localhost',
+            host='54.242.252.29',
             port='5432'
         )
 
@@ -192,7 +192,7 @@ def obtenerEstadoProceso(idProceso):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='localhost',
+            host='54.242.252.29',
             port='5432'
         )
 
