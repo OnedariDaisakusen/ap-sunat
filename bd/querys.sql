@@ -1,25 +1,26 @@
 CREATE TABLE public.tb_sunat_resultado (
 	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	fechabusqueda date NULL,
-	numeroruc varchar(20) NULL,
-	razonsocial varchar(255) NULL,
-	tipocontribuyente varchar(50) NULL,
-	nombrecomercial varchar(255) NULL,
+	numeroruc text NULL,
+	razonsocial text NULL,
+	tipocontribuyente text NULL,
+	nombrecomercial text NULL,
 	fechainscripcion date NULL,
 	fechainicioactividades date NULL,
-	estadocontribuyente varchar(50) NULL,
-	condicioncontribuyente varchar(50) NULL,
+	estadocontribuyente text NULL,
+	condicioncontribuyente text NULL,
 	domiciliofiscal text NULL,
-	sistemaemisioncomprobante varchar(50) NULL,
-	actividadcomerciointerior varchar(255) NULL,
-	sistemacontabilidad varchar(50) NULL,
+	sistemaemisioncomprobante text NULL,
+	actividadcomerciointerior text NULL,
+	sistemacontabilidad text NULL,
 	actividadeseconomicas text NULL,
 	emisorelectronicodesde date NULL,
-	comprobanteselectronicos varchar(255) NULL,
+	comprobanteselectronicos text NULL,
 	afiliadoalpledesde date NULL,
 	padrones text NULL,
 	importante text NULL,
-	CONSTRAINT tb_sunat_resultado_pkey PRIMARY KEY (id)
+	CONSTRAINT tb_sunat_resultado_pkey PRIMARY KEY (id),
+    id_proceso INT REFERENCES tb_sunat_proceso(id)
 );
 
 
@@ -47,6 +48,5 @@ CREATE TABLE IF NOT EXISTS tb_sunat_proceso (
     estado VARCHAR(50),
     registros_procesados INT,
     registros_no_procesados INT,
-    id_usuario INT REFERENCES tb_sunat_usuario(id),
-    id_resultado INT REFERENCES tb_sunat_resultado(id)
+    id_usuario INT REFERENCES tb_sunat_usuario(id)
 );

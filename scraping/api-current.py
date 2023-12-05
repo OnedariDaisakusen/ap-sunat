@@ -12,7 +12,7 @@ import jwt
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'tu_clave_secreta'
-
+controlador_hilos = 0
 class HilosControllerCurrent:
     def __init__(self, numero_hilos):
         self.numero_hilos_maximos = numero_hilos
@@ -186,9 +186,6 @@ def validarToken():
 @app.route('/obtenerResultadoProceso/<int:idProceso>', methods=['GET'])
 def obtenerResultadoProceso(idProceso):
     return jsonify(listaResultadosPorProceso(idProceso))
-
-
-
 
 if __name__ == '__main__':
     controlador_hilos = HilosControllerCurrent(numero_hilos=5)

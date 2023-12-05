@@ -23,9 +23,9 @@ def iniciarProceso(lista_rucs,idProceso, idUsuario):
     # # Usamos chrome como navegador
     options = webdriver.ChromeOptions()
 
-    # options.add_argument('--headless')
+    options.add_argument('--headless')
     options.add_argument(f'user-agent={user_agent}')
-    # options.add_argument("--window-size=1920,1080")
+    options.add_argument("--window-size=1920,1080")
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--allow-running-insecure-content')
     options.add_argument("--disable-extensions")

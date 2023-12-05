@@ -9,7 +9,7 @@ def conectar_bd():
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='54.242.252.29',
+            host='3.91.87.116',
             port='5432'
         )
 
@@ -42,7 +42,7 @@ def insertar_resultado(resultado_dict, idProceso):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='54.242.252.29',
+            host='3.91.87.116',
             port='5432'
         )
 
@@ -78,9 +78,9 @@ def insertar_proceso(proceso_dict):
 
     sql = """
             INSERT INTO tb_sunat_proceso (
-            fecha_finalizacion,estado,registros_procesados,registros_no_procesados,id_usuario
+            fecha_creacion, fecha_finalizacion,estado,registros_procesados,registros_no_procesados,id_usuario
             ) VALUES (
-                %s, %s, %s, %s, %s
+                %s,%s, %s, %s, %s, %s
             )RETURNING id;
         """
     conexion = None
@@ -90,14 +90,14 @@ def insertar_proceso(proceso_dict):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='54.242.252.29',
+            host='3.91.87.116',
             port='5432'
         )
 
         cursor = conexion.cursor()
 
         # Extraer los valores del diccionario
-        valores = (
+        valores = (datetime.now(),
             proceso_dict['fecha_finalizacion'], proceso_dict['estado'],
             proceso_dict['registros_procesados'], proceso_dict['registros_no_procesados'],
             proceso_dict['id_usuario']
@@ -122,7 +122,7 @@ def actualizar_proceso(proceso_dict):
     sql = """
             UPDATE tb_sunat_proceso 
             SET 
-                estado = %s,
+                estado = %s,                
                 fecha_finalizacion  = %s,
                 registros_procesados  = %s,
                 registros_no_procesados = %s
@@ -135,7 +135,7 @@ def actualizar_proceso(proceso_dict):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='54.242.252.29',
+            host='3.91.87.116',
             port='5432'
         )
 
@@ -143,7 +143,7 @@ def actualizar_proceso(proceso_dict):
 
         # Extraer los valores del diccionario
         valores = (
-            "TERMINADO", datetime.now(),
+            proceso_dict['estado'], datetime.now(),
             proceso_dict['registros_procesados'], proceso_dict['registros_no_procesados'],
             proceso_dict['id_proceso']
         )
@@ -159,7 +159,46 @@ def actualizar_proceso(proceso_dict):
     finally:
         if conexion is not None:
             conexion.close()  
-        
+
+def actualizar_proceso_estado(proceso_dict):
+
+    sql = """
+            UPDATE tb_sunat_proceso 
+            SET 
+                estado = %s
+            where id = %s
+            ;
+        """
+    conexion = None
+    try:
+        conexion = psycopg2.connect(
+            dbname='postgres',
+            user='postgres',
+            password='123456',
+            host='3.91.87.116',
+            port='5432'
+        )
+
+        cursor = conexion.cursor()
+
+        # Extraer los valores del diccionario
+        valores = (
+            proceso_dict['estado'],
+            proceso_dict['id_proceso']
+        )
+
+        # Ejecutar la consulta de inserción
+        cursor.execute(sql, valores)
+        conexion.commit()
+        cursor.close()
+        print("DATOS ACTUALIZADOS CORREXCTAMENTE")
+
+    except psycopg2.Error as e:
+        print(f"Error durante la inserción de datos: {e}")   
+    finally:
+        if conexion is not None:
+            conexion.close()  
+     
 def obtenerUsuario(usuario):
     select_query = sql.SQL("SELECT * FROM tb_sunat_usuario WHERE usuario = {}").format(sql.Literal(usuario['usuario']))
 
@@ -169,7 +208,7 @@ def obtenerUsuario(usuario):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='54.242.252.29',
+            host='3.91.87.116',
             port='5432'
         )
 
@@ -191,7 +230,7 @@ def obtenerEstadoProceso(idProceso):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='54.242.252.29',
+            host='3.91.87.116',
             port='5432'
         )
 
@@ -200,13 +239,11 @@ def obtenerEstadoProceso(idProceso):
         proceso = cursor.fetchone()
 
         obj_proceso = {
-            "id":proceso[0],
             "fecha_creacion":proceso[1],
             "fecha_finalizacion":proceso[2],
             "estado":proceso[3],
             "registros_procesados":proceso[4],
             "registros_no_procesados":proceso[5],
-            "id_usuario":proceso[6],            
         }
 
         return obj_proceso
@@ -219,7 +256,7 @@ def listaResultadosPorProceso(idProceso):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='54.242.252.29',
+            host='3.91.87.116',
             port='5432'
         )
         cursor = conexion.cursor()
