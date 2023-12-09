@@ -9,7 +9,7 @@ def conectar_bd():
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='3.91.87.116',
+            host='52.87.198.236',
             port='5432'
         )
 
@@ -42,7 +42,7 @@ def insertar_resultado(resultado_dict, idProceso):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='3.91.87.116',
+            host='52.87.198.236',
             port='5432'
         )
 
@@ -90,7 +90,7 @@ def insertar_proceso(proceso_dict):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='3.91.87.116',
+            host='52.87.198.236',
             port='5432'
         )
 
@@ -135,7 +135,7 @@ def actualizar_proceso(proceso_dict):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='3.91.87.116',
+            host='52.87.198.236',
             port='5432'
         )
 
@@ -175,7 +175,7 @@ def actualizar_proceso_estado(proceso_dict):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='3.91.87.116',
+            host='52.87.198.236',
             port='5432'
         )
 
@@ -208,7 +208,7 @@ def obtenerUsuario(usuario):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='3.91.87.116',
+            host='52.87.198.236',
             port='5432'
         )
 
@@ -230,7 +230,7 @@ def obtenerEstadoProceso(idProceso):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='3.91.87.116',
+            host='52.87.198.236',
             port='5432'
         )
 
@@ -256,7 +256,7 @@ def listaResultadosPorProceso(idProceso):
             dbname='postgres',
             user='postgres',
             password='123456',
-            host='3.91.87.116',
+            host='52.87.198.236',
             port='5432'
         )
         cursor = conexion.cursor()
